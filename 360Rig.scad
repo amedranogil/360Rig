@@ -67,6 +67,30 @@ module goproConnector(){
     translate([0,0,10.85]) rotate([-90,0,90]) gopro_connector("double");
 }
 
+module cornerO(){
+       rotate([0,atan(sqrt(2)),45]) 
+            children();
+    for ( a = [
+                [atan(sqrt(2)),0,-45],
+                [atan(sqrt(2)),0,45],
+                ] )
+        rotate(a) 
+                rotate([0,0,30]) children();
+    for ( a = [
+                [180-atan(sqrt(2)),0,-45],
+                [180-atan(sqrt(2)),0,45],
+                [-atan(sqrt(2)),0,45],
+                ] )
+        rotate(a) 
+                rotate([0,0,-30]) children();
+    for ( a = [
+                [0,180-atan(sqrt(2)),45],
+                [0,180-atan(sqrt(2)),180-45],
+                ] )
+        rotate(a) 
+                rotate([0,0,-60]) children();
+}
+
 difference(){
     intersection(){
         cube(S,center=true);
@@ -79,6 +103,12 @@ difference(){
     rotate([180-atan(sqrt(2)),0,-45]) 
         translate([0,0,inscribedSOct(S*ratio*sqrt(2)/2)])
             tripodConnector(13,20,6.5,22);
+    
+    //removing inner corners
+    cb=15;
+    cornerO()
+            translate([0,0,inscribedSOct(S*ratio*sqrt(2)/2)-cb-13.5])
+                cylinder(d=25,h=cb, $fn=3);
 }
 //connector for GoPro accessories
 rotate([-atan(sqrt(2)),0,-45]) 
@@ -87,5 +117,6 @@ rotate([-atan(sqrt(2)),0,-45])
 for (n=[1:6]){
     faceO(n,S)
         translate([0,(S-B)/2-10.85,-7.35]) rotate([0,90,0]) gopro_connector("triple");
-    %faceO(n,S) cube([80,60,40],center=true);
+//    %faceO(n,S) cube([80,60,40],center=true);
+//      %faceO(n,S) translate([30,20,-10]) rotate([0,-90,90]) import("GOPRO_HERO_3.stl");
 }
