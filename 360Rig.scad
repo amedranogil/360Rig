@@ -78,7 +78,7 @@ difference(){
     //hole for 1/4" nut for tripod compatibility
     rotate([180-atan(sqrt(2)),0,-45]) 
         translate([0,0,inscribedSOct(S*ratio*sqrt(2)/2)])
-            tripodConnector(13,10,6.5,12);
+            tripodConnector(13,20,6.5,22);
 }
 //connector for GoPro accessories
 rotate([-atan(sqrt(2)),0,-45]) 
