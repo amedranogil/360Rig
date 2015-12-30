@@ -111,7 +111,11 @@ difference(){
 
 
 difference(){
-    frame(S,B,ratio);
+    ms=3;
+        minkowski(){
+        frame(S-ms,B-ms*2,ratio);
+        sphere(d=ms);
+    }
     
     //hole for 1/4" nut for tripod compatibility
     rotate([180-atan(sqrt(2)),0,-45]) 
