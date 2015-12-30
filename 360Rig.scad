@@ -106,7 +106,7 @@ difference(){
     cd=rhyp(7/9*(S-B),(S-B)/2)/2;
     echo(cd);
     cornerO()
-          translate([0,0,sqrt(3)*(S-B-cd/3)/2-cb])
+          translate([0,0,sqrt(3)*(S-B-cd/2.5)/2-cb])
                 cylinder(d=cd,h=cb, $fn=3);
 }
 }
