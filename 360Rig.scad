@@ -103,9 +103,11 @@ difference(){
     
     //removing inner corners
     cb=15;
+    cd=rhyp(7/9*(S-B),(S-B)/2)/2;
+    echo(cd);
     cornerO()
-            translate([0,0,inscribedSOct(S*ratio*sqrt(2)/2)-cb-13.5])
-                cylinder(d=25,h=cb, $fn=3);
+          translate([0,0,sqrt(3)*(S-B-cd/3)/2-cb])
+                cylinder(d=cd,h=cb, $fn=3);
 }
 }
 
