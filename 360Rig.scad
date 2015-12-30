@@ -91,6 +91,7 @@ module cornerO(){
                 rotate([0,0,-60]) children();
 }
 
+module frame(S,B,ratio){
 difference(){
     intersection(){
         cube(S,center=true);
@@ -99,10 +100,6 @@ difference(){
     for (a = [[0,0,0],[90,0,0],[0,90,0]]) {
         rotate(a) face(S-B,100,7/9,S+1);
     }
-    //hole for 1/4" nut for tripod compatibility
-    rotate([180-atan(sqrt(2)),0,-45]) 
-        translate([0,0,inscribedSOct(S*ratio*sqrt(2)/2)])
-            tripodConnector(13,20,6.5,22);
     
     //removing inner corners
     cb=15;
@@ -110,6 +107,18 @@ difference(){
             translate([0,0,inscribedSOct(S*ratio*sqrt(2)/2)-cb-13.5])
                 cylinder(d=25,h=cb, $fn=3);
 }
+}
+
+
+difference(){
+    frame(S,B,ratio);
+    
+    //hole for 1/4" nut for tripod compatibility
+    rotate([180-atan(sqrt(2)),0,-45]) 
+        translate([0,0,inscribedSOct(S*ratio*sqrt(2)/2)])
+            tripodConnector(13,20,6.5,22);
+}
+
 //connector for GoPro accessories
 rotate([-atan(sqrt(2)),0,-45]) 
         translate([0,0,inscribedSOct(S*ratio*sqrt(2)/2)])
@@ -117,6 +126,7 @@ rotate([-atan(sqrt(2)),0,-45])
 for (n=[1:6]){
     faceO(n,S)
         translate([0,(S-B)/2-10.85,-7.35]) rotate([0,90,0]) gopro_connector("triple");
+    //Debugging: camera/case fitting
 //    %faceO(n,S) cube([80,60,40],center=true);
 //      %faceO(n,S) translate([30,20,-10]) rotate([0,-90,90]) import("GOPRO_HERO_3.stl");
 }
