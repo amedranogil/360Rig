@@ -13,7 +13,7 @@ gopro_hole2base=10.85;
 //ratio octagon/cube, sizes the corners
 ratio = 12/5;
 //the roundes of the face holes
-faceD=10;
+faceR=10;
 //the size of the border (x2)
 B=gopro_connector_z*2;
 //the maximum camera dimension 
@@ -121,12 +121,12 @@ difference(){
         octahedron(S*ratio);
     }
     for (a = [[0,0,0],[90,0,0],[0,90,0]]) {
-        rotate(a) face(S-B,faceD,S+1);
+        rotate(a) face(S-B,faceR,S+1);
     }
     
     //removing inner corners
     cb=15;
-    cd=faceD;
+    cd=faceR;
     cornerO()
           translate([0,0,sqrt(3)*(S-B-cd/2.0)/2-cb])
                 cylinder(d=cd,h=cb, $fn=3);
