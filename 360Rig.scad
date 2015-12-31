@@ -21,7 +21,7 @@ MaxCamDim=70;
 // total size of the rig (cube)
 S=MaxCamDim+B;
 //edje smoothness (0 to disable)
-Smoothness=0;
+Smoothness=4;
 
 module octahedron(size) {
     s=size/2;
@@ -86,7 +86,7 @@ module goproConnector2(){
 
 module goproConnector3(){
     gopro_connector("triple");
-    translate([0,gopro_connector_z+1,0])
+    translate([0,gopro_connector_z-1,0])
 				cube([gopro_connector_z,B/4,gopro_connector_z], center=true);
 }
 
@@ -139,7 +139,7 @@ difference(){
         ms=Smoothness;
         minkowski(){
             frame(S-ms,B-ms*2,ratio);
-            sphere(d=ms);
+            sphere(d=ms,$fn=15);
         }
     }
     else {
