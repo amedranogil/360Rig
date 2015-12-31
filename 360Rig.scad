@@ -1,10 +1,27 @@
 use <gopro_mounts_mooncactus.scad>
 
 
+/****************************
+** GoPro Mounts parameters **
+****************************/
+gopro_connector_z = 14.7;
+gopro_hole2base=10.85;
+
+/*********************
+** 360Rig Paramters **
+*********************/
+//ratio octagon/cube, sizes the corners
 ratio = 12/5;
-B=14.7*2;
-MaxCamDim=90;
+//sizes the roundes of the face holes
+faceR=7/9;
+//the size of the border (x2)
+B=gopro_connector_z*2;
+//the maximum camera dimension 
+MaxCamDim=70;
+// total size of the rig (cube)
 S=MaxCamDim+B;
+//edje smoothness (0 to disable)
+Smoothness=0;
 
 module octahedron(size) {
     s=size/2;
@@ -63,8 +80,14 @@ module tripodConnector(d1,h1,d2,h2){
     }
 }
 
-module goproConnector(){
-    translate([0,0,10.85]) rotate([-90,0,90]) gopro_connector("double");
+module goproConnector2(){
+    translate([0,0,gopro_hole2base]) rotate([-90,0,90]) gopro_connector("double");
+}
+
+module goproConnector3(){
+    gopro_connector("triple");
+    translate([0,gopro_connector_z+1,0])
+				cube([gopro_connector_z,B/4,gopro_connector_z], center=true);
 }
 
 module cornerO(){
@@ -98,13 +121,12 @@ difference(){
         octahedron(S*ratio);
     }
     for (a = [[0,0,0],[90,0,0],[0,90,0]]) {
-        rotate(a) face(S-B,100,7/9,S+1);
+        rotate(a) face(S-B,100,faceR,S+1);
     }
     
     //removing inner corners
     cb=15;
-    cd=rhyp(7/9*(S-B),(S-B)/2)/2;
-    echo(cd);
+    cd=rhyp(faceR*(S-B),(S-B)/2)/2;
     cornerO()
           translate([0,0,sqrt(3)*(S-B-cd/2.5)/2-cb])
                 cylinder(d=cd,h=cb, $fn=3);
@@ -113,10 +135,15 @@ difference(){
 
 
 difference(){
-    ms=3;
+    if (Smoothness > 0) {
+        ms=Smoothness;
         minkowski(){
-        frame(S-ms,B-ms*2,ratio);
-        sphere(d=ms);
+            frame(S-ms,B-ms*2,ratio);
+            sphere(d=ms);
+        }
+    }
+    else {
+        frame(S,B,ratio);
     }
     
     //hole for 1/4" nut for tripod compatibility
@@ -128,11 +155,12 @@ difference(){
 //connector for GoPro accessories
 rotate([-atan(sqrt(2)),0,-45]) 
         translate([0,0,inscribedSOct(S*ratio*sqrt(2)/2)])
-            goproConnector();
+            goproConnector2();
 for (n=[1:6]){
     faceO(n,S)
-        translate([0,(S-B)/2-10.85,-7.35]) rotate([0,90,0]) gopro_connector("triple");
+        translate([0,(S-B)/2-gopro_hole2base,-gopro_connector_z/2]) 
+            rotate([0,90,0]) goproConnector3();
     //Debugging: camera/case fitting
 //    %faceO(n,S) cube([80,60,40],center=true);
-//      %faceO(n,S) translate([30,20,-10]) rotate([0,-90,90]) import("GOPRO_HERO_3.stl");
+      %faceO(n,S) translate([30,15,-15]) rotate([0,-90,90]) import("GOPRO_HERO_3.stl");
 }
