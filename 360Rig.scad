@@ -46,9 +46,8 @@ module octahedron(size) {
         ];
     polyhedron(p,f);
 }
-function sq(a)= a*a;
-function rhyp(r,h) = sqrt(sq(r)-sq(h));
-function hyp(r,h) = sqrt(sq(r)+sq(h));
+
+function rhyp(r,h) = sqrt(pow(r,2)-pow(h,2));
 
 function inscribedSOct(a) = sqrt(6)*a/6;
 
