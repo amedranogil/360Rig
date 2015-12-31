@@ -12,8 +12,8 @@ gopro_hole2base=10.85;
 *********************/
 //ratio octagon/cube, sizes the corners
 ratio = 12/5;
-//sizes the roundes of the face holes
-faceR=7/9;
+//the roundes of the face holes
+faceD=10;
 //the size of the border (x2)
 B=gopro_connector_z*2;
 //the maximum camera dimension 
@@ -46,16 +46,15 @@ module octahedron(size) {
         ];
     polyhedron(p,f);
 }
-function sq(a)= a*a;
-function rhyp(r,h) = sqrt(sq(r)-sq(h));
-function hyp(r,h) = sqrt(sq(r)+sq(h));
 
 function inscribedSOct(a) = sqrt(6)*a/6;
 
-module face(cube_size, res, ratio = ratio, h) {
-    intersection(){
-        cube([cube_size,cube_size,h], center=true);
-        cylinder(r=rhyp(ratio*cube_size,cube_size/2),h = h,center=true,$fn=res);
+module face(s, d, h) {
+    hull(){
+        for (p = [[-1,-1,0],[1,-1,0],[-1,1,0],[1,1,0]]){
+            translate(p*(s/2-d))
+                cylinder(r=d,h = h,center=true);
+        }
     }
 }
 
@@ -122,14 +121,14 @@ difference(){
         octahedron(S*ratio);
     }
     for (a = [[0,0,0],[90,0,0],[0,90,0]]) {
-        rotate(a) face(S-B,100,faceR,S+1);
+        rotate(a) face(S-B,faceD,S+1);
     }
     
     //removing inner corners
     cb=15;
-    cd=rhyp(faceR*(S-B),(S-B)/2)/2;
+    cd=faceD;
     cornerO()
-          translate([0,0,sqrt(3)*(S-B-cd/2.5)/2-cb])
+          translate([0,0,sqrt(3)*(S-B-cd/2.0)/2-cb])
                 cylinder(d=cd,h=cb, $fn=3);
 }
 }
