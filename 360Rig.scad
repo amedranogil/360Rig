@@ -21,7 +21,7 @@ MaxCamDim=70;
 // total size of the rig (cube)
 S=MaxCamDim+B;
 //edje smoothness (0 to disable)
-Smoothness=4;
+Smoothness=0;
 
 module octahedron(size) {
     s=size/2;
@@ -74,6 +74,7 @@ module faceO(n,S){
 
 module tripodConnector(d1,h1,d2,h2){
     translate([0,0,-h2])
+    rotate([0,0,30])
     union(){
         cylinder(d=d1,h=h1,$fn=6);
         cylinder(d=d2,h=h2);
@@ -162,5 +163,5 @@ for (n=[1:6]){
             rotate([0,90,0]) goproConnector3();
     //Debugging: camera/case fitting
 //    %faceO(n,S) cube([80,60,40],center=true);
-      %faceO(n,S) translate([30,15,-15]) rotate([0,-90,90]) import("GOPRO_HERO_3.stl");
+//      %faceO(n,S) translate([30,15,-15]) rotate([0,-90,90]) import("GOPRO_HERO_3.stl");
 }
