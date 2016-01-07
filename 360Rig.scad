@@ -81,7 +81,7 @@ module tripodConnector(d1,h1,d2,h2){
 }
 
 module goproConnector2(){
-    translate([0,0,gopro_hole2base]) rotate([-90,0,90]) gopro_connector("double");
+    translate([0,0,gopro_hole2base-0.2]) rotate([-90,0,90]) gopro_connector("double");
 }
 
 module goproConnector3(){
