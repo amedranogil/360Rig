@@ -17,7 +17,7 @@ faceR=10;
 //the size of the border (x2)
 B=gopro_connector_z*2;
 //the maximum camera dimension 
-MaxCamDim=70;
+MaxCamDim=80;
 // total size of the rig (cube)
 S=MaxCamDim+B;
 //edje smoothness (0 to disable)

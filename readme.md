@@ -12,7 +12,7 @@ OpenSCAD build and Parameters
 -------------------------------------------
 This repository includes [MoonCactus' GoPro Mount Librarty](http://www.thingiverse.com/thing:62800) (licensed under [CC - A - NC 3.0](http://creativecommons.org/licenses/by-nc/3.0/), work to which no modification is done) . 
 
-Probably the only parameter you will need to edit is the `MaxCamDim` parameter. It is set for 70mm wide cases (60mm + some margin), this parameter will make the rig smaller or larger accordingly. Make sure your case will fit by "debugging" a cube with it's dimensions (see debbuging towards the end of the scad file).
+Probably the only parameter you will need to edit is the `MaxCamDim` parameter. It is set for 80mm wide cases (78mm + some margin), this parameter will make the rig smaller or larger accordingly. Make sure your case will fit by "debugging" a cube with it's dimensions (see debbuging towards the end of the scad file).
 
 License
 --------
