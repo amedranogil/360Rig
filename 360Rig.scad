@@ -10,6 +10,8 @@ gopro_hole2base=10.85;
 /*********************
 ** 360Rig Paramters **
 *********************/
+//Number of horizontal Cameras
+N=5;
 //ratio octagon/cube, sizes the corners
 ratio = 12/5;
 //the roundes of the face holes
@@ -133,33 +135,66 @@ difference(){
 }
 }
 
+module edge(S,B,ratio,extra=0){
+    intersection(){
+        frame(S,B,ratio);
+        translate([-extra,-extra,-S/2]) cube(S);
+    }
+}
+
+function apothem(n,s) = (s*cos(180/n))/(2*sin(180/n));
+
+function circumradius(n,s) = s/(2*sin(180/n));
+
+//function tRatio(N,s) = apothem(N,s) - apothem(4,s);
+function tRatio(N,s) = circumradius(N, sqrt(2)*s) - circumradius(4, sqrt(2)*s);
+
+//TODO: fix MATH!
+module Nframe(N,S,B,ratio){
+
+for (a = [0:360/N:360])
+    rotate([0,0,a]) 
+        translate(tRatio(N,(S-B)/2)*[1,1,0])
+    edge(S,B,ratio,B/2*sin((90-360/N)/4));
+
+}
 
 difference(){
     if (Smoothness > 0) {
         ms=Smoothness;
         minkowski(){
-            frame(S-ms,B-ms*2,ratio);
+            Nframe(N,S-ms,B-ms*2,ratio);
             sphere(d=ms,$fn=15);
         }
     }
     else {
-        frame(S,B,ratio);
+        Nframe(N,S,B,ratio);
     }
     
     //hole for 1/4" nut for tripod compatibility
-    rotate([180-atan(sqrt(2)),0,-45]) 
+    translate(tRatio(N,(S-B)/2)*[1,1,0])
+    rotate([0,180-atan(sqrt(2)),45]) 
         translate([0,0,inscribedSOct(S*ratio*sqrt(2)/2)])
             tripodConnector(13,20,6.5,22);
 }
 
 //connector for GoPro accessories
+    translate(tRatio(N,(S-B)/2)*[1,1,0])
 rotate([-atan(sqrt(2)),0,-45]) 
         translate([0,0,inscribedSOct(S*ratio*sqrt(2)/2)])
             goproConnector2();
-for (n=[1:6]){
-    faceO(n,S)
+
+//connectors on edges
+for (a = [0:360/N:360]){
+    rotate([0,0,a]) 
+        translate(tRatio(N,(S-B)/2)*[1,1,0])
+    faceO(5,S)
         translate([0,(S-B)/2-gopro_hole2base,-gopro_connector_z/2]) 
             rotate([0,90,0]) goproConnector3();
+    
+//TODO: Top and Bottom connectors
+
+//TODO: fix debugging
     //Debugging: camera/case fitting
 //    %faceO(n,S) cube([80,60,40],center=true);
 //      %faceO(n,S) translate([30,15,-15]) rotate([0,-90,90]) import("GOPRO_HERO_3.stl");
