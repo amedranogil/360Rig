@@ -4,16 +4,18 @@ use <gopro_mounts_mooncactus.scad>
 /****************************
 ** GoPro Mounts parameters **
 ****************************/
-gopro_connector_z = 14.7;
-gopro_hole2base=10.85;
+//DON'T CHANGE
+gopro_connector_z = 14.7*1; 
+//DON'T CHANGE
+gopro_hole2base=10.85*1;  
 
 /*********************
 ** 360Rig Paramters **
 *********************/
 //Number of horizontal Cameras
-N=5;
-//ratio octagon/cube, sizes the corners
-ratio = 12/5;
+N=5; //[4:10]
+//ratio octagon/cube, sizes the corners 12/5=2.4
+ratio = 2.4; 
 //the roundes of the face holes
 faceR=10;
 //the size of the border (x2)
@@ -23,7 +25,7 @@ MaxCamDim=80;
 // total size of the rig (cube)
 S=MaxCamDim+B;
 //edje smoothness (0 to disable)
-Smoothness=0;
+Smoothness=0; // [0:7]
 
 module octahedron(size) {
     s=size/2;
