@@ -193,8 +193,11 @@ for (a = [0:360/N:360]){
         translate([0,(S-B)/2-gopro_hole2base,-gopro_connector_z/2]) 
             rotate([0,90,0]) goproConnector3();
     
-//TODO: Top and Bottom connectors
-
+//Top and Bottom connectors
+    for (z=[S/2,-S/2+B/2])
+    rotate([0,0,outerAngle()/2-180])
+translate([0,(S-B)/2-gopro_hole2base+B/4,-gopro_connector_z/2+z]) 
+            rotate([0,90,0]) goproConnector3();
 //TODO: fix debugging
     //Debugging: camera/case fitting
 //    %faceO(n,S) cube([80,60,40],center=true);
