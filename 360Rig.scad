@@ -192,15 +192,24 @@ for (a = [0:360/N:360]){
     faceO(5,S)
         translate([0,(S-B)/2-gopro_hole2base,-gopro_connector_z/2]) 
             rotate([0,90,0]) goproConnector3();
-    
+} 
 //Top and Bottom connectors
     for (z=[S/2,-S/2+B/2])
     rotate([0,0,outerAngle()/2-180])
     translate(diagD(tRatio(N,S-B/2))*[0,1,0])
 translate([0,(S-B)/2-gopro_hole2base,-gopro_connector_z/2+z]) 
             rotate([0,90,0]) goproConnector3();
-//TODO: fix debugging
+// fix debugging
     //Debugging: camera/case fitting
-//    %faceO(n,S) cube([80,60,40],center=true);
-//      %faceO(n,S) translate([30,15,-15]) rotate([0,-90,90]) import("GOPRO_HERO_3.stl");
+    /*
+%for (a = [0:360/N:360]){
+    rotate([0,0,a]) 
+        translate(diagD(tRatio(N,S-B))*[1,1,0])
+    faceO(5,S) cube([80,60,40],center=true);
 }
+%for (z=[S/2,-S/2+B/2])
+    rotate([0,0,outerAngle()/2-180])
+    translate(diagD(tRatio(N,S-B/2))*[0,1,0]+[0,0,z])
+    cube([80,60,40],center=true);
+*/
+
