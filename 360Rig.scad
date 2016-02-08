@@ -162,6 +162,61 @@ for (a = [0:360/N:360])
 
 }
 
+module sedge(S,B,ratio,extra=0,Smoothness){
+    difference(){
+        translate(diagD(tRatio(N,S-B))*[1,1,0])
+    if (Smoothness > 0) {
+        ms=Smoothness;
+        minkowski(){
+            edge(S-ms,B-ms*2,ratio,0);
+            sphere(d=ms,$fn=15);
+        }
+    }
+    else {
+        edge(S,B,ratio,0);
+    }
+    // edge cut
+    PosSideA()
+        translate(-[S/2,0,S/2]) cube([S,B,S]);
+    PosSideB()
+        translate(-[S/2,0,S/2]) cube([S,B,S]); 
+    }
+    // side Connector
+    translate(diagD(tRatio(N,S-B))*[1,1,0])
+    faceO(5,S)
+        translate([0,(S-B)/2-gopro_hole2base,-gopro_connector_z/2]) 
+            rotate([0,90,0]) goproConnector3();
+}
+
+module MainEdgeConnectors(){
+difference(){
+     children(0);
+    
+    //hole for 1/4" nut for tripod compatibility
+    translate(diagD(tRatio(N,S-B))*[1,1,0])
+    rotate([0,180-atan(sqrt(2)),45]) 
+        translate([0,0,inscribedSOct(S*ratio*sqrt(2)/2)])
+            tripodConnector(13,20,6.5,22);
+}
+//external connector for GoPro accessories
+    translate(diagD(tRatio(N,S-B))*[1,1,0])
+    rotate([-atan(sqrt(2)),0,-45]) 
+        translate([0,0,inscribedSOct(S*ratio*sqrt(2)/2)])
+            goproConnector2();
+
+//Top and Bottom connectors
+    difference(){
+        for (z=[S/2,-S/2+B/2])
+            rotate([0,0,outerAngle()/2-180])
+            translate(diagD(tRatio(N,S-B/2))*[0,1,0])
+            translate([0,(S-B)/2-gopro_hole2base,-gopro_connector_z/2+z]) 
+                    rotate([0,90,0]) goproConnector3();
+        PosSideB()
+            rotate([0,0,outerAngle()/2-90]) translate(-[B,0,S/2])  cube([B,B,S]);
+    }
+}
+
+module test(){
 difference(){
     if (Smoothness > 0) {
         ms=Smoothness;
@@ -214,4 +269,24 @@ translate([0,(S-B)/2-gopro_hole2base,-gopro_connector_z/2+z])
     translate(diagD(tRatio(N,S-B/2))*[0,1,0]+[0,0,z])
     cube([80,60,40],center=true);
 */
+
+}
+
+module PosSideA(){
+    translate(diagD(tRatio(N,S-B))*[1,1,0])
+translate([0,(S-B)/2,0])
+rotate([0,0,180- outerAngle()/2]) children(0);
+}
+
+module PosSideB(){
+    translate(diagD(tRatio(N,S-B))*[1,1,0])
+        translate([(S-B)/2,0,0])
+        rotate([0,0,90 + outerAngle()/2]) children(0);
+}
+//test();
+//for (a = [360/N:360/N:360])
+//    rotate([0,0,a]) translate([1,1,0])
+ //sedge(S,B,ratio,0,Smoothness);
+MainEdgeConnectors()
+ sedge(S,B,ratio,0,Smoothness);
 
