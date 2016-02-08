@@ -1,4 +1,4 @@
-use <gopro_mounts_mooncactus.scad>
+//use <gopro_mounts_mooncactus.scad>
 
 
 /****************************
@@ -13,7 +13,7 @@ gopro_hole2base=10.85*1;
 ** 360Rig Paramters **
 *********************/
 //Model to render
-model = "Main Edge"; //["Full Frame", "Simple Edge", "Main Edge"]
+model = "Full Frame"; //["Full Frame", "Simple Edge", "Main Edge"]
 //Number of horizontal Cameras
 N=5; //[4:10]
 //ratio octagon/cube, sizes the corners 12/5=2.4
@@ -30,6 +30,7 @@ S=MaxCamDim+B;
 Smoothness=0; // [0:7]
 //Tolerance (for better fitting of edjes)
 tol=1;
+
 
 module octahedron(size) {
     s=size/2;
@@ -282,3 +283,114 @@ if (model=="Simple Edge")
 if (model=="Main Edge")
     MainEdgeConnectors() SimpleEdgeModifications()
         sedge(S,B,ratio,0,Smoothness);
+
+
+/* [Hidden] */
+    
+    // This tab is useful only if you have selected "rod" as the secondary head. The optional rod diameter (also the captive nut internal diameter)
+gopro_captive_rod_id= 3.8;
+// The angle the rod makes with the axis (0 is colinear, 90 is a right angle)
+gopro_captive_rod_angle= 45; // [0:90]
+// Optional captive nut thickness with freeplay (tightest would be 3.2)
+gopro_rod_nut_th= 3.6;
+// Optional captive nut diameter with freeplay (from corner to corner)
+gopro_rod_nut_od= 8.05;
+// How much is the protruding output of the rod on the rod attachment (can be zero), useful if you don't want a captive nut with still a tight coupling
+gopro_captive_protruding_h= 0.5;
+
+// The gopro connector itself (you most probably do not want to change this but for the first two)
+
+// The locking nut on the gopro mount triple arm mount (keep it tight)
+gopro_nut_d= 9.2;
+// How deep is this nut embossing (keep it small to avoid over-overhangs)
+gopro_nut_h= 2;
+// Hole diameter for the two-arm mount part
+gopro_holed_two= 5;
+// Hole diameter for the three-arm mount part
+gopro_holed_three= 5.5;
+// Thickness of the internal arm in the 3-arm mount part
+gopro_connector_th3_middle= 3.1;
+// Thickness of the side arms in the 3-arm mount part
+gopro_connector_th3_side= 2.7;
+// Thickness of the arms in the 2-arm mount part
+gopro_connector_th2= 3.04;
+// The gap in the 3-arm mount part for the two-arm
+gopro_connector_gap= 3.1;
+// How round are the 2 and 3-arm parts
+gopro_connector_roundness= 1;
+// How thick are the mount walls
+gopro_wall_th= 3;
+
+gopro_connector_wall_tol=0.5+0;
+gopro_tol=0.04+0;
+
+//
+// ============================= GOPRO CONNECTOR =============================
+//
+
+module gopro_torus(r,rnd)
+{
+	translate([0,0,rnd/2])
+		rotate_extrude(convexity= 10)
+			translate([r-rnd/2, 0, 0])
+				circle(r= rnd/2, $fs=0.2);
+}
+
+module gopro_rcyl(r,h, centered, rnd=1)
+{
+	translate([0,0,center ? -h/2 : 0])
+	hull() {
+		translate([0,0,0]) gopro_torus(r=r, rnd=rnd);
+		translate([0,0,h-rnd]) gopro_torus(r=r, rnd=rnd);
+	}
+}
+
+module gopro_connector(version="double", withnut=true, captive_nut_th=0, captive_nut_od=0, captive_rod_id=0, captive_nut_angle=0)
+{
+	module gopro_profile(th)
+	{
+		hull()
+		{
+			gopro_torus(r=gopro_connector_z/2, rnd=gopro_connector_roundness);
+			translate([0,0,th-gopro_connector_roundness])
+				gopro_torus(r=gopro_connector_z/2, rnd=gopro_connector_roundness);
+			translate([-gopro_connector_z/2,gopro_connector_z/2,0])
+				cube([gopro_connector_z,gopro_wall_th,th]);
+		}
+	}
+	difference()
+	{
+		union()
+		{
+			if(version=="double")
+			{
+				for(mz=[-1:2:+1]) scale([1,1,mz])
+						translate([0,0,gopro_connector_th3_middle/2 + (gopro_connector_gap-gopro_connector_th2)/2]) gopro_profile(gopro_connector_th2);
+			}
+			if(version=="triple")
+			{
+				translate([0,0,-gopro_connector_th3_middle/2]) gopro_profile(gopro_connector_th3_middle);
+				for(mz=[-1:2:+1]) scale([1,1,mz])
+					translate([0,0,gopro_connector_th3_middle/2 + gopro_connector_gap]) gopro_profile(gopro_connector_th3_side);
+			}
+
+			// add the common wall
+			translate([0,gopro_connector_z/2+gopro_wall_th/2+gopro_connector_wall_tol,0])
+				cube([gopro_connector_z,gopro_wall_th,gopro_connector_z], center=true);
+
+			// add the optional nut emboss
+			if(version=="triple" && withnut)
+			{
+				translate([0,0,gopro_connector_z/2-gopro_tol])
+				difference()
+				{
+					cylinder(r1=gopro_connector_z/2-gopro_connector_roundness/2, r2=11.5/2, h=gopro_nut_h+gopro_tol);
+					cylinder(r=gopro_nut_d/2, h=gopro_connector_z/2+3.5+gopro_tol, $fn=6);
+				}
+			}
+		}
+		// remove the axis
+		translate([0,0,-gopro_tol])
+			cylinder(r=(version=="double" ? gopro_holed_two : gopro_holed_three)/2, h=gopro_connector_z+4*gopro_tol, center=true, $fs=1);
+	}
+}
