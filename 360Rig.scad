@@ -216,46 +216,12 @@ difference(){
     }
 }
 
-module test(){
-difference(){
-    if (Smoothness > 0) {
-        ms=Smoothness;
-        minkowski(){
-            Nframe(N,S-ms,B-ms*2,ratio);
-            sphere(d=ms,$fn=15);
-        }
-    }
-    else {
-        Nframe(N,S,B,ratio);
-    }
-    
-    //hole for 1/4" nut for tripod compatibility
-    translate(diagD(tRatio(N,S-B))*[1,1,0])
-    rotate([0,180-atan(sqrt(2)),45]) 
-        translate([0,0,inscribedSOct(S*ratio*sqrt(2)/2)])
-            tripodConnector(13,20,6.5,22);
-}
-
-//connector for GoPro accessories
-    translate(diagD(tRatio(N,S-B))*[1,1,0])
-rotate([-atan(sqrt(2)),0,-45]) 
-        translate([0,0,inscribedSOct(S*ratio*sqrt(2)/2)])
-            goproConnector2();
-
-//connectors on edges
-for (a = [0:360/N:360]){
-    rotate([0,0,a]) 
-        translate(diagD(tRatio(N,S-B))*[1,1,0])
-    faceO(5,S)
-        translate([0,(S-B)/2-gopro_hole2base,-gopro_connector_z/2]) 
-            rotate([0,90,0]) goproConnector3();
-} 
-//Top and Bottom connectors
-    for (z=[S/2,-S/2+B/2])
-    rotate([0,0,outerAngle()/2-180])
-    translate(diagD(tRatio(N,S-B/2))*[0,1,0])
-translate([0,(S-B)/2-gopro_hole2base,-gopro_connector_z/2+z]) 
-            rotate([0,90,0]) goproConnector3();
+module full(){
+for (a = [360/N:360/N:360-360/N])
+    rotate([0,0,a]) //translate([1,1,0])
+        sedge(S,B,ratio,0,Smoothness);
+MainEdgeConnectors()
+ sedge(S,B,ratio,0,Smoothness);
 // fix debugging
     //Debugging: camera/case fitting
     /*
@@ -283,10 +249,8 @@ module PosSideB(){
         translate([(S-B)/2,0,0])
         rotate([0,0,90 + outerAngle()/2]) children(0);
 }
-//test();
-//for (a = [360/N:360/N:360])
-//    rotate([0,0,a]) translate([1,1,0])
- //sedge(S,B,ratio,0,Smoothness);
+
+//full();
 MainEdgeConnectors()
  sedge(S,B,ratio,0,Smoothness);
 
