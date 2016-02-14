@@ -28,6 +28,8 @@ MaxCamDim=80;
 S=MaxCamDim+B;
 //edje smoothness (0 to disable)
 Smoothness=0; // [0:7]
+//Tolerance (for better fitting of edjes)
+tol=1;
 
 module octahedron(size) {
     s=size/2;
@@ -192,6 +194,15 @@ module PosSideB(){
         rotate([0,0,90 + outerAngle()/2]) children(0);
 }
 
+module edge2edgeCon(s){
+    translate([0,-s/8,0])
+    rotate([0,0,-30])
+    difference(){
+        cylinder(d=s,h=S,center=true,$fn=3);
+        cube(S-B,center=true);
+    }
+}
+
 module SimpleEdgeModifications(){
     edgeConnectors(S,B)
     difference(){
@@ -201,7 +212,15 @@ module SimpleEdgeModifications(){
         translate(-[S/2,0,S/2]) cube([S,B,S]);
     PosSideB()
         translate(-[S/2,0,S/2]) cube([S,B,S]); 
+    //negative e2e connector
+    PosSideA()
+        translate([B/4,0,0])
+        edge2edgeCon(B/2.7+tol);
     }
+    //possitive e2e connector
+    PosSideB()
+        translate([-B/4,0,0]) mirror([0,1,0])
+        edge2edgeCon(B/2.7);
 }
 
 module MainEdgeConnectors(){
@@ -263,4 +282,3 @@ if (model=="Simple Edge")
 if (model=="Main Edge")
     MainEdgeConnectors() SimpleEdgeModifications()
         sedge(S,B,ratio,0,Smoothness);
-
