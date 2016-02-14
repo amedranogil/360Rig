@@ -12,6 +12,8 @@ gopro_hole2base=10.85*1;
 /*********************
 ** 360Rig Paramters **
 *********************/
+//Model to render
+model = "Main Edge"; //["Full Frame", "Simple Edge", "Main Edge"]
 //Number of horizontal Cameras
 N=5; //[4:10]
 //ratio octagon/cube, sizes the corners 12/5=2.4
@@ -154,17 +156,8 @@ function tRatio(N,s) = apothem(N,sqrt(2)*s/2) - apothem(4,sqrt(2)*s/2);
 
 function diagD(d) = sqrt(2)*d/2; 
 
-module Nframe(N,S,B,ratio){
-for (a = [0:360/N:360])
-    rotate([0,0,a]) 
-        translate(diagD(tRatio(N,S-B))*[1,1,0])
-    edge(S,B,ratio,0);
-
-}
-
 module sedge(S,B,ratio,extra=0,Smoothness){
-    difference(){
-        translate(diagD(tRatio(N,S-B))*[1,1,0])
+translate(diagD(tRatio(N,S-B))*[1,1,0])
     if (Smoothness > 0) {
         ms=Smoothness;
         minkowski(){
@@ -175,12 +168,11 @@ module sedge(S,B,ratio,extra=0,Smoothness){
     else {
         edge(S,B,ratio,0);
     }
-    // edge cut
-    PosSideA()
-        translate(-[S/2,0,S/2]) cube([S,B,S]);
-    PosSideB()
-        translate(-[S/2,0,S/2]) cube([S,B,S]); 
-    }
+}
+
+
+module edgeConnectors(S,B){
+    children(0);
     // side Connector
     translate(diagD(tRatio(N,S-B))*[1,1,0])
     faceO(5,S)
@@ -188,8 +180,33 @@ module sedge(S,B,ratio,extra=0,Smoothness){
             rotate([0,90,0]) goproConnector3();
 }
 
+module PosSideA(){
+    translate(diagD(tRatio(N,S-B))*[1,1,0])
+translate([0,(S-B)/2,0])
+rotate([0,0,180- outerAngle()/2]) children(0);
+}
+
+module PosSideB(){
+    translate(diagD(tRatio(N,S-B))*[1,1,0])
+        translate([(S-B)/2,0,0])
+        rotate([0,0,90 + outerAngle()/2]) children(0);
+}
+
+module SimpleEdgeModifications(){
+    edgeConnectors(S,B)
+    difference(){
+    children(0);
+    // edge cut
+    PosSideA()
+        translate(-[S/2,0,S/2]) cube([S,B,S]);
+    PosSideB()
+        translate(-[S/2,0,S/2]) cube([S,B,S]); 
+    }
+}
+
 module MainEdgeConnectors(){
 difference(){
+     edgeConnectors(S,B)
      children(0);
     
     //hole for 1/4" nut for tripod compatibility
@@ -219,7 +236,7 @@ difference(){
 module full(){
 for (a = [360/N:360/N:360-360/N])
     rotate([0,0,a]) //translate([1,1,0])
-        sedge(S,B,ratio,0,Smoothness);
+        edgeConnectors(S,B) sedge(S,B,ratio,0,Smoothness);
 MainEdgeConnectors()
  sedge(S,B,ratio,0,Smoothness);
 // fix debugging
@@ -238,19 +255,12 @@ MainEdgeConnectors()
 
 }
 
-module PosSideA(){
-    translate(diagD(tRatio(N,S-B))*[1,1,0])
-translate([0,(S-B)/2,0])
-rotate([0,0,180- outerAngle()/2]) children(0);
-}
-
-module PosSideB(){
-    translate(diagD(tRatio(N,S-B))*[1,1,0])
-        translate([(S-B)/2,0,0])
-        rotate([0,0,90 + outerAngle()/2]) children(0);
-}
-
-//full();
-MainEdgeConnectors()
- sedge(S,B,ratio,0,Smoothness);
+if (model=="Full Frame")
+    full();
+if (model=="Simple Edge")
+    SimpleEdgeModifications()
+        sedge(S,B,ratio,0,Smoothness);
+if (model=="Main Edge")
+    MainEdgeConnectors() SimpleEdgeModifications()
+        sedge(S,B,ratio,0,Smoothness);
 
