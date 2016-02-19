@@ -13,7 +13,7 @@ gopro_hole2base=10.85*1;
 ** 360Rig Paramters **
 *********************/
 //Model to render
-model = "Main Edge"; //["Full Frame", "Simple Edge", "Main Edge"]
+model = "Full Frame"; //[Full Frame, Simple Edge, Main Edge]
 //Number of horizontal Cameras
 N=5; //[4:10]
 //ratio octagon/cube, sizes the corners 12/5=2.4
@@ -253,7 +253,7 @@ difference(){
 }
 
 module full(){
-for (a = [360/N:360/N:360-360/N])
+for (a = [360/N:360/N:359])
     rotate([0,0,a]) //translate([1,1,0])
         edgeConnectors(S,B) sedge(S,B,ratio,0,Smoothness);
 MainEdgeConnectors()
@@ -276,9 +276,9 @@ MainEdgeConnectors()
 
 if (model=="Full Frame")
     full();
-if (model=="Simple Edge")
+else if (model=="Simple Edge")
     SimpleEdgeModifications()
         sedge(S,B,ratio,0,Smoothness);
-if (model=="Main Edge")
+else
     MainEdgeConnectors() SimpleEdgeModifications()
         sedge(S,B,ratio,0,Smoothness);
