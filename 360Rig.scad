@@ -30,6 +30,10 @@ S=MaxCamDim+B;
 Smoothness=0; // [0:7]
 //Tolerance (for better fitting of edjes)
 tol=1;
+//select External GoProConnector
+ExtGoPro=true;
+//select External 1/4" nut for tripods
+ExtQIN=true;
 
 module octahedron(size) {
     s=size/2;
@@ -229,12 +233,14 @@ difference(){
      children(0);
     
     //hole for 1/4" nut for tripod compatibility
+    if (ExtQIN)
     translate(diagD(tRatio(N,S-B))*[1,1,0])
     rotate([0,180-atan(sqrt(2)),45]) 
         translate([0,0,inscribedSOct(S*ratio*sqrt(2)/2)])
             tripodConnector(13,20,6.5,22);
 }
 //external connector for GoPro accessories
+    if (ExtGoPro)
     translate(diagD(tRatio(N,S-B))*[1,1,0])
     rotate([-atan(sqrt(2)),0,-45]) 
         translate([0,0,inscribedSOct(S*ratio*sqrt(2)/2)])
