@@ -31,9 +31,9 @@ Smoothness=0; // [0:7]
 //Tolerance (for better fitting of edjes)
 tol=1;
 //select External GoProConnector
-ExtGoPro=true;
+ExtGoPro=1;// [1:yes, 0:no]
 //select External 1/4" nut for tripods
-ExtQIN=true;
+ExtQIN=1;// [1:yes, 0:no]
 
 module octahedron(size) {
     s=size/2;
