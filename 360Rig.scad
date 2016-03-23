@@ -247,6 +247,7 @@ difference(){
             translate(diagD(tRatio(N,S-B/2))*[0,1,0])
             translate([0,(S-B)/2-gopro_hole2base,-gopro_connector_z/2+z]) 
                     rotate([0,90,0]) goproConnector3();
+        if(model != "Full Frame")
         PosSideB()
             rotate([0,0,outerAngle()/2-90]) translate(-[B,0,S/2])  cube([B,B,S]);
     }
