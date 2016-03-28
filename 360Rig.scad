@@ -236,14 +236,14 @@ difference(){
     if (ExtQIN)
     translate(diagD(tRatio(N,S-B))*[1,1,0])
     rotate([0,180-atan(sqrt(2)),45]) 
-        translate([0,0,inscribedSOct(S*ratio*sqrt(2)/2)])
+        translate([0,0,inscribedSOct(S*ratio*sqrt(2)/2)-inscribedSOct(Smoothness/3)])
             tripodConnector(13,20,6.5,22);
 }
 //external connector for GoPro accessories
     if (ExtGoPro)
     translate(diagD(tRatio(N,S-B))*[1,1,0])
     rotate([-atan(sqrt(2)),0,-45]) 
-        translate([0,0,inscribedSOct(S*ratio*sqrt(2)/2)])
+        translate([0,0,inscribedSOct(S*ratio*sqrt(2)/2)-inscribedSOct(Smoothness/3)-0.1])
             goproConnector2();
 
 //Top and Bottom connectors
