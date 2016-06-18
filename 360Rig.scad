@@ -7,7 +7,7 @@ use <gopro_mounts_mooncactus.scad>
 //DON'T CHANGE
 gopro_connector_z = 14.7*1; 
 //DON'T CHANGE
-gopro_hole2base=10.85*1;  
+gopro_hole2base=10.85*1;
 
 /*********************
 ** 360Rig Paramters **
@@ -34,6 +34,8 @@ tol=1;
 ExtGoPro=1;// [1:yes, 0:no]
 //select External 1/4" nut for tripods
 ExtQIN=1;// [1:yes, 0:no]
+// diameter for screwdriver hole, set to 0 to disable
+driverHoles = 6.5;
 
 module octahedron(size) {
     s=size/2;
@@ -178,7 +180,17 @@ translate(diagD(tRatio(N,S-B))*[1,1,0])
 
 
 module edgeConnectors(S,B){
-    children(0);
+    difference(){
+        children(0);
+         //holes for Screwdriver
+        if(driverHoles > 0){
+            translate(diagD(tRatio(N,S-B))*[1,1,0])
+            faceO(5,S)
+            translate([0,(S-B)/2-gopro_hole2base,-gopro_connector_z/2]) 
+            rotate([0,-90,0])
+              cylinder(d=driverHoles,h=S);
+        }
+    }
     // side Connector
     translate(diagD(tRatio(N,S-B))*[1,1,0])
     faceO(5,S)
@@ -230,7 +242,18 @@ module SimpleEdgeModifications(){
 module MainEdgeConnectors(){
 difference(){
      edgeConnectors(S,B)
-     children(0);
+     difference(){
+        children(0);
+         //holes for Screwdriver
+         if(driverHoles > 0){
+             for (z=[S/2,-S/2+B/2])
+            rotate([0,0,outerAngle()/2-180])
+            translate(diagD(tRatio(N,S-B/2))*[0,1,0])
+            translate([0,(S-B)/2-gopro_hole2base,-gopro_connector_z/2+z]) 
+                    rotate([0,-90,0]) 
+              cylinder(d=driverHoles,h=S);
+         }
+     }
     
     //hole for 1/4" nut for tripod compatibility
     if (ExtQIN)
