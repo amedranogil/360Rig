@@ -15,7 +15,7 @@ gopro_hole2base=10.85*1;
 //Model to render
 model = "Full Frame"; //[Full Frame, Simple Edge, Main Edge]
 //Number of horizontal Cameras
-N=5; //[4:10]
+N=4; //[4:10]
 //ratio octagon/cube, sizes the corners 12/5=2.4
 ratio = 2.4; 
 //the roundes of the face holes
@@ -36,6 +36,10 @@ ExtGoPro=1;// [1:yes, 0:no]
 ExtQIN=1;// [1:yes, 0:no]
 // diameter for screwdriver hole, set to 0 to disable
 driverHoles = 6.5;
+// Set the alternation of orientation (0= side, 1=top, -1 = bottom)
+orientations = [0,-1,0,-1,0,-1,0,-1,0,-1,0,-1];
+// Orientation for individual edges
+orient = 0; // [0,1]
 
 
 module octahedron(size) {
@@ -73,7 +77,7 @@ module face(s, d, h) {
     }
 }
 
-module faceO(n,S){
+module faceO(n,S,o=0){
     faces=[
             [0,0,0],
             [0,270,0],
@@ -83,7 +87,7 @@ module faceO(n,S){
             [180,0,0],
     ];
     
-    rotate(faces[n-1]) translate([0,0,S/2]) children();
+    rotate(faces[n-1]) rotate([0,0,90*o]) translate([0,0,S/2]) children();
 }
 
 module tripodConnector(d1,h1,d2,h2){
@@ -180,23 +184,27 @@ translate(diagD(tRatio(N,S-B))*[1,1,0])
 }
 
 
-module edgeConnectors(S,B){
+module edgeConnectors(S,B,o=0){
+    r = (o%2)*90 + o * outerAngle()/2;
+    orot = o==0? 1 : sign(o);
     difference(){
         children(0);
          //holes for Screwdriver
         if(driverHoles > 0){
             translate(diagD(tRatio(N,S-B))*[1,1,0])
-            faceO(5,S)
+            faceO(5,S,o)
             translate([0,(S-B)/2-gopro_hole2base,-gopro_connector_z/2]) 
-            rotate([0,-90,0])
-              cylinder(d=driverHoles,h=S);
+            rotate([0,r,0])
+            rotate([0,orot*-90,0])
+             cylinder(d=driverHoles,h=S);
         }
     }
     // side Connector
     translate(diagD(tRatio(N,S-B))*[1,1,0])
-    faceO(5,S)
+    faceO(5,S,o)
         translate([0,(S-B)/2-gopro_hole2base,-gopro_connector_z/2]) 
-            rotate([0,90,0]) goproConnector3();
+            rotate([0,r,0])
+            rotate([0,orot*90,0]) goproConnector3();
 }
 
 module PosSideA(){
@@ -240,9 +248,9 @@ module SimpleEdgeModifications(){
         edge2edgeCon(B/2.7);
 }
 
-module MainEdgeConnectors(){
+module MainEdgeConnectors(o){
 difference(){
-     edgeConnectors(S,B)
+     edgeConnectors(S,B,o)
      difference(){
         children(0);
          //holes for Screwdriver
@@ -284,11 +292,13 @@ difference(){
 }
 
 module full(){
-for (a = [360/N:360/N:359])
+for (i = [1:N-1]) {
+    a = i*360/N;
     rotate([0,0,a]) //translate([1,1,0])
-        edgeConnectors(S,B) sedge(S,B,ratio,0,Smoothness);
-MainEdgeConnectors()
+        edgeConnectors(S,B,orientations[i]) sedge(S,B,ratio,0,Smoothness);
+MainEdgeConnectors(orientations[0])
  sedge(S,B,ratio,0,Smoothness);
+}
 // fix debugging
     //Debugging: camera/case fitting
     /*
@@ -308,10 +318,10 @@ MainEdgeConnectors()
 if (model=="Full Frame")
     full();
 else if (model=="Simple Edge")
-    SimpleEdgeModifications()
+    SimpleEdgeModifications(orient)
         sedge(S,B,ratio,0,Smoothness);
 else
-    MainEdgeConnectors() SimpleEdgeModifications()
+    MainEdgeConnectors(orient) SimpleEdgeModifications()
         sedge(S,B,ratio,0,Smoothness);
 
 
