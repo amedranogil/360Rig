@@ -15,7 +15,7 @@ gopro_hole2base=10.85*1;
 //Model to render
 model = "Full Frame"; //[Full Frame, Simple Edge, Main Edge]
 //Number of horizontal Cameras
-N=4; //[4:10]
+N=5; //[4:10]
 //ratio octagon/cube, sizes the corners 12/5=2.4
 ratio = 2.4; 
 //the roundes of the face holes
@@ -102,10 +102,10 @@ module goproConnector2(){
     translate([0,0,gopro_hole2base-0.2]) rotate([-90,0,90]) gopro_connector("double");
 }
 
-module goproConnector3(){
+module goproConnector3(z=B/4){
     gopro_connector("triple");
-    translate([0,gopro_connector_z-1,0])
-				cube([gopro_connector_z,B/4,gopro_connector_z], center=true);
+    translate([0,gopro_connector_z-0.2-B/8+z/2,0])
+				cube([gopro_connector_z,z,gopro_connector_z], center=true);
 }
 
 module cornerO(){
@@ -203,7 +203,7 @@ module edgeConnectors(S,B,o=0){
     faceO(5,S,o)
         translate([0,(S-B)/2-gopro_hole2base,-gopro_connector_z/2]) 
             rotate([0,r,0])
-            rotate([0,orot*90,0]) goproConnector3();
+            rotate([0,orot*90,0]) goproConnector3(0);
 }
 
 module PosSideA(){
@@ -227,8 +227,8 @@ module edge2edgeCon(s){
     }
 }
 
-module SimpleEdgeModifications(){
-    edgeConnectors(S,B)
+module SimpleEdgeModifications(o){
+    edgeConnectors(S,B,o)
     difference(){
     children(0);
     // edge cut
