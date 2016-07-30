@@ -36,8 +36,8 @@ ExtGoPro=1;// [1:yes, 0:no]
 ExtQIN=1;// [1:yes, 0:no]
 // diameter for screwdriver hole, set to 0 to disable
 driverHoles = 6.5;
-// Set the alternation of orientation (0= side, 1=top)
-orientations = [0,1,0,1,0,1,0,1,0,1,0,1];
+// Set the alternation of orientation (0= side, 1=top, -1 = bottom)
+orientations = [0,-1,0,-1,0,-1,0,-1,0,-1,0,-1];
 // Orientation for individual edges
 orient = 0; // [0,1]
 
@@ -185,6 +185,7 @@ translate(diagD(tRatio(N,S-B))*[1,1,0])
 
 module edgeConnectors(S,B,o=0){
     r = (o%2)*90 + o * outerAngle()/2;
+    orot = o==0? 1 : sign(o);
     difference(){
         children(0);
          //holes for Screwdriver
@@ -193,7 +194,7 @@ module edgeConnectors(S,B,o=0){
             faceO(5,S,o)
             translate([0,(S-B)/2-gopro_hole2base,-gopro_connector_z/2]) 
             rotate([0,r,0])
-            rotate([0,-90,0])
+            rotate([0,orot*-90,0])
              cylinder(d=driverHoles,h=S);
         }
     }
@@ -202,7 +203,7 @@ module edgeConnectors(S,B,o=0){
     faceO(5,S,o)
         translate([0,(S-B)/2-gopro_hole2base,-gopro_connector_z/2]) 
             rotate([0,r,0])
-            rotate([0,90,0]) goproConnector3();
+            rotate([0,orot*90,0]) goproConnector3();
 }
 
 module PosSideA(){
